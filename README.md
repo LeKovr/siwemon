@@ -7,10 +7,10 @@
  [![GitHub code size in bytes][sz]]()
  [![GitHub license][gl1]][gl2]
 
-[gr1]: https://img.shields.io/github/release-pre/apisite/siwemon.svg
-[gr2]: https://github.com/apisite/siwemon/releases
-[sz]: https://img.shields.io/github/languages/code-size/apisite/siwemon.svg
-[gl1]: https://img.shields.io/github/license/apisite/siwemon.svg
+[gr1]: https://img.shields.io/github/release-pre/LeKovr/siwemon.svg
+[gr2]: https://github.com/LeKovr/siwemon/releases
+[sz]: https://img.shields.io/github/languages/code-size/LeKovr/siwemon.svg
+[gl1]: https://img.shields.io/github/license/LeKovr/siwemon.svg
 [gl2]: LICENSE
 
 This is a service which
