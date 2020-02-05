@@ -1,0 +1,45 @@
+<html>
+<head>
+<script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
+</head>
+<body onload="loaded()">
+<div id="graphdiv2"
+  style="width:80%; height:80%;"></div>
+<script type="text/javascript">
+  var g2 = new Dygraph(
+    document.getElementById("graphdiv2"),
+    "timing.log", // path to CSV file
+    {
+      drawPoints: true,
+      showRoller: true,
+    }          // options
+  );
+  var refresh = 0;
+  searchParams = new URLSearchParams(window.location.search)
+  if (searchParams.has('refresh')) {
+    refresh = searchParams.get('refresh')
+  }
+  console.log('Ready for '+refresh);
+  if (refresh > 0) {
+    setInterval(function(){
+      console.log('Reload '+refresh);
+      g2.updateOptions( { 'file': "timing.log" } );
+    }, refresh * 1000);
+  }
+  function loaded() {
+    document.getElementById('ref').value=refresh
+  }
+</script>
+<form method=get>
+Refresh: <select id="ref" name="refresh" onchange="this.form.submit()">
+<option value="0">None</option>
+<option value="3">3 sec</option>
+<option value="10">10 sec</option>
+<option value="60">1 min</option>
+</select>
+</form>
+<a href="https://cis.iac.tender.pro/logs/?mask=1%5C.%7C2%5C.%7C3%5C.#monitor/timing.log">Realtime text data</a>
+<br />Graphics by <a href="http://www.dygraphs.com/">dygraphs</a>
+</body>
+</html>
