@@ -7,7 +7,7 @@
  [![GitHub code size in bytes][sz]]()
  [![GitHub license][gl1]][gl2]
 
-[gr1]: https://img.shields.io/github/release-pre/LeKovr/siwemon.svg
+[gr1]: https://img.shields.io/github/release/LeKovr/siwemon.svg
 [gr2]: https://github.com/LeKovr/siwemon/releases
 [sz]: https://img.shields.io/github/languages/code-size/LeKovr/siwemon.svg
 [gl1]: https://img.shields.io/github/license/LeKovr/siwemon.svg
