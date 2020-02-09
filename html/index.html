@@ -5,42 +5,67 @@
 </head>
 <body onload="loaded()">
 <div id="graphdiv2"
-  style="width:80%; height:80%;"></div>
+  style="width:80%; height:40%;"></div>
+<div id="graphdiv3"
+  style="width:80%; height:40%;"></div>
 <script type="text/javascript">
-  var g2 = new Dygraph(
-    document.getElementById("graphdiv2"),
-    "timing.log", // path to CSV file
-    {
-      drawPoints: true,
-      showRoller: true,
-    }          // options
-  );
   var refresh = 0;
   searchParams = new URLSearchParams(window.location.search)
   if (searchParams.has('refresh')) {
     refresh = searchParams.get('refresh')
   }
-  console.log('Ready for '+refresh);
+  var day;
+  if (searchParams.has('day')) {
+    day = searchParams.get('day')
+  } else {
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+    day = today.getFullYear()+'-'+mm+'-'+dd;
+  }
+  console.log('Ready for ' + refresh);
+  console.log('Log date ' + day);
+
+  var g2 = new Dygraph(
+    document.getElementById("graphdiv2"),
+    "data/swm-"+day+".log", // path to CSV file
+    {
+      drawPoints: true,
+      showRoller: true,
+    }          // options
+  );
+
   if (refresh > 0) {
-    setInterval(function(){
       console.log('Reload '+refresh);
-      g2.updateOptions( { 'file': "timing.log" } );
+    setInterval(function(){
+      g2.updateOptions( { 'file': "data/swm-"+day+".log" } );
     }, refresh * 1000);
   }
   function loaded() {
-    document.getElementById('ref').value=refresh
+    document.getElementById('ref').value = refresh;
+    document.getElementById('day').value = day;
   }
 </script>
 <form method=get>
+Date: <input type="text" id="day" name="day" size="10" maxlength="10" onchange="this.form.submit()">
 Refresh: <select id="ref" name="refresh" onchange="this.form.submit()">
 <option value="0">None</option>
 <option value="3">3 sec</option>
 <option value="10">10 sec</option>
 <option value="60">1 min</option>
 </select>
+<a href='?'>Reset</a>
 </form>
-<a href="https://cis.iac.tender.pro/logs/?mask=1%5C.%7C2%5C.%7C3%5C.#monitor/timing.log">Realtime text data</a>
-<br />Graphics by <a href="http://www.dygraphs.com/">dygraphs</a>
-<br />Powered by <a href="https://github.com/LeKovr/siwemon">siwemon</a>
+<div>
+<hr />
+Graphics by <a href="http://www.dygraphs.com/">dygraphs</a>
+| Powered by <a href="https://github.com/LeKovr/siwemon">siwemon</a>
+</div>
 </body>
 </html>

@@ -1,0 +1,20 @@
+
+version: '2'
+
+services:
+  www:
+    image: nginx:1.15-alpine
+    networks:
+      - web
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:${APP_SITE}"
+    volumes:
+      - ./html/index.html:/usr/share/nginx/html/index.html
+      - ./data:/usr/share/nginx/html/data:ro
+
+networks:
+  web:
+    external:
+      name: ${DCAPE_NET}
