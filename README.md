@@ -16,7 +16,7 @@
 This is a service which
 * makes requests to website via curl
 * save request timing to file
-* shows timings as graph
+* shows timings as graph via nginx docker container
 
 ## License
 
