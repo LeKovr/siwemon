@@ -5,6 +5,7 @@
 
 [ "$MON_URLS" ]  || { echo "ERROR: 'MON_URLS' value is missing"; exit; }
 [ "$MON_NAMES" ] || { echo "ERROR: 'MON_NAMES' value is missing"; exit; }
+[ "$DATA_PATH" ] || { echo "ERROR: 'DATA_PATH' value is missing"; exit; }
 [ "$DEST" ]      || { echo "ERROR: 'DEST' value is missing"; exit; }
 [ "$SLEEP" ]     || { echo "ERROR: 'SLEEP' value is missing"; exit; }
 [ "$FLAG" ]      || { echo "ERROR: 'FLAG' value is missing"; exit; }
@@ -17,18 +18,19 @@ spaces=" ${MON_URLS//[^ ]}"
 redirs=${spaces// / -o \/dev\/null/}
 [ "$DEBUG" ] && echo "Redirs: ($redirs)"
 
+[ "$DEBUG" ] && echo "URLs: ($MON_URLS)"
+
 touch $FLAG
 
 while [ -f $FLAG ] ; do
   d=$(date +"%F")
   dest=${DEST/\%F/$d}
-  [ -f $dest ] || echo "Stamp,"$MON_NAMES > $dest
+  [ -f $dest ] || echo "Stamp,"$MON_NAMES > $DATA_PATH/$dest
   f=$(date +"%F %H:%M:%S")
-  [ "$DEBUG" ] && echo "$redirs $MON_URLS"
   ta=$(curl -w ' %{time_total}' -s $redirs $MON_URLS)
   tb=${ta//,/.}
   t=${tb// /,}
-  echo "$f$t" >> $dest
+  echo "$f$t" >> $DATA_PATH/$dest
   [ "$DEBUG" ] && echo "$f$t"
   sleep $SLEEP
 done

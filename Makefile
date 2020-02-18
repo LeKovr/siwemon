@@ -1,34 +1,37 @@
 
 SHELL          = /bin/bash
-CFG            = .env
+CFG           ?= .env
 PRG           ?= $(shell basename $$PWD)
 
 # Frontend host, empty value disables nginx
-APP_SITE ?=
+APP_SITE      ?= swm.dev.lan
 
 # URLs to fetch
-MON_URLS ?= https://google.ru https://mail.ru
+MON_URLS      ?= https://google.ru https://mail.ru
 
 # URL Names
-MON_NAMES ?= google,mail.ru
+MON_NAMES     ?= google,mail.ru
+
+# Path to metric files
+DATA_PATH     ?= ./data
 
 # File to save metrics (%F will be replaced with iteration's date)
-DEST ?= data/swm-%F.log
+DEST          ?= swm-%F.log
 
 # Sleep seconds before next iteration
-SLEEP ?= 2
+SLEEP         ?= 2
 
 # Exit when this file removed
-FLAG ?= $(PRG).on
+FLAG          ?= $(PRG).on
 
 # container prefix
-PROJECT_NAME ?= hostname_domain
+PROJECT_NAME  ?= swm
 
 # dcape net connect to
-DCAPE_NET    ?= dcape_default
+DCAPE_NET     ?= dcape_default
 
 # docker-compose version
-DC_VER        = 1.23.2
+DC_VER        ?= 1.23.2
 
 define CONFIG_DEFAULT
 # ------------------------------------------------------------------------------
@@ -42,6 +45,9 @@ MON_URLS=$(MON_URLS)
 
 # URL Names
 MON_NAMES=$(MON_NAMES)
+
+# Path to metric files
+DATA_PATH=$(DATA_PATH)
 
 # File to save metrics (%F will be replaced with iteration's date)
 DEST=$(DEST)
@@ -67,12 +73,12 @@ export
 .PHONY : debug start stop up down dc help
 
 debug:
-	DEBUG=1 bash times.sh
+	DEBUG=1 bash swm.sh
 
 
 ## start mon daemon
 start:
-	if [ ! -f $(FLAG) ] ; then nohup bash times.sh > /dev/null 2>&1 &  fi
+	if [ ! -f $(FLAG) ] ; then nohup bash swm.sh > /dev/null 2>&1 &  fi
 
 ## stop mon daemon
 stop:
