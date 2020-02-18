@@ -25,7 +25,7 @@ touch $FLAG
 while [ -f $FLAG ] ; do
   d=$(date +"%F")
   dest=${DEST/\%F/$d}
-  [ -f $dest ] || echo "Stamp,"$MON_NAMES > $DATA_PATH/$dest
+  [ -f $DATA_PATH/$dest ] || echo "Stamp,"$MON_NAMES > $DATA_PATH/$dest
   f=$(date +"%F %H:%M:%S")
   ta=$(curl -w ' %{time_total}' -s $redirs $MON_URLS)
   tb=${ta//,/.}

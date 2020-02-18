@@ -78,7 +78,7 @@ debug:
 
 ## start mon daemon
 start:
-	if [ ! -f $(FLAG) ] ; then nohup bash swm.sh > /dev/null 2>&1 &  fi
+	if [ ! -f $(FLAG) ] ; then nohup bash swm.sh > $(PRG).log 2>&1 &  fi
 
 ## stop mon daemon
 stop:
