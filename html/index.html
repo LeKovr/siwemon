@@ -2,65 +2,116 @@
 <head>
 <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
+<title>swm chart</title>
 </head>
 <body onload="loaded()">
-<div id="graphdiv2"
-  style="width:80%; height:40%;"></div>
-<div id="graphdiv3"
-  style="width:80%; height:40%;"></div>
+<div id="graphholder" style="height:90%;"></div>
 <script type="text/javascript">
-  var refresh = 0;
-  searchParams = new URLSearchParams(window.location.search)
-  if (searchParams.has('refresh')) {
-    refresh = searchParams.get('refresh')
-  }
-  var day;
-  if (searchParams.has('day')) {
-    day = searchParams.get('day')
-  } else {
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth() + 1; //January is 0!
+  function today() {
+    var d = new Date();
+    var dd = d.getDate();
+    var mm = d.getMonth() + 1; //January is 0!
     if (dd < 10) {
       dd = '0' + dd;
     }
     if (mm < 10) {
       mm = '0' + mm;
     }
-    day = today.getFullYear()+'-'+mm+'-'+dd;
+    return d.getFullYear() + '-' + mm + '-' + dd;
   }
-  console.log('Ready for ' + refresh);
-  console.log('Log date ' + day);
 
-  var g2 = new Dygraph(
-    document.getElementById("graphdiv2"),
-    "data/swm-"+day+".log", // path to CSV file
-    {
-      drawPoints: true,
-      showRoller: true,
-    }          // options
-  );
-
-  if (refresh > 0) {
-      console.log('Reload '+refresh);
-    setInterval(function(){
-      g2.updateOptions( { 'file': "data/swm-"+day+".log" } );
-    }, refresh * 1000);
+  function setupDay() {
+    if (searchParams.has('day')) {
+      day = searchParams.get('day')
+    }
+    if (day != undefined && day != "") {
+      document.getElementById('day').value = day;
+    } else {
+      day = today()
+    }
+    console.log('Day: ' + day);
   }
+
+  function setupGraph() {
+    if (searchParams.has('tag')) {
+      tags = searchParams.getAll('tag');
+      var f = document.getElementById('attrs')
+      for (var i = 0; i < tags.length; i++) {
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "tag"
+        input.value = tags[i];
+        f.appendChild(input);
+        tags[i] = tags[i].replace(/[\/]/g, "").replace("DAY", day);
+      }
+    } 
+    console.log('Tags: ' + tags);
+    var graphHeight = Math.floor(100/tags.length)+"%";
+    var holder = document.getElementById("graphholder");
+    for (var i = 0; i < tags.length; i++) {
+      var d = document.createElement("div");
+      d.style.height = graphHeight;
+      var id = "graphdiv" + i;
+      d.id = id;
+      holder.appendChild(d);
+      graphs[i] = new Dygraph(
+        d,      //ocument.getElementById("graphdiv2"),
+        prefix + tags[i], //"data/swm-"+day+".log", // path to CSV file
+        {
+          drawPoints: true,
+          showRoller: true,
+          legend: "always",
+          labelsSeparateLines: false
+        }          // options
+      );
+    }
+  }
+
+  function clearForm(form) {
+    document.getElementById('ref').value = "";
+    document.getElementById('day').value = "";
+    form.submit();
+    return true;
+  }
+
   function loaded() {
+    if (searchParams.has('refresh')) {
+      refresh = searchParams.get('refresh')
+    }
+    console.log('Refresh: ' + refresh);
     document.getElementById('ref').value = refresh;
-    document.getElementById('day').value = day;
+    setupDay();
+    tags=[ 'swm-DAY.log'.replace("DAY",day) ];
+    setupGraph();
+    if (refresh > 0) {
+      setInterval(function(){
+      console.log('Reload '+refresh);
+        for (var i = 0; i < tags.length; i++) {
+          graphs[i].updateOptions( { 'file': prefix+tags[i] } );
+        }
+      }, refresh * 1000);
+    }
   }
+
+  var searchParams = new URLSearchParams(window.location.search);
+  var refresh = 0;
+  var day;
+  var prefix = 'data/';
+  var tags;
+  var graphs = [];
+
 </script>
-<form method=get>
+<form method="get">
+  <div id="attrs"></div>
 Date: <input type="text" id="day" name="day" size="10" maxlength="10" onchange="this.form.submit()">
-Refresh: <select id="ref" name="refresh" onchange="this.form.submit()">
+Refresh: <select id="ref" name="refresh" onchange="this.form.submit()" style="height:1.6em;">
 <option value="0">None</option>
 <option value="3">3 sec</option>
 <option value="10">10 sec</option>
 <option value="60">1 min</option>
+<option value="300">5 min</option>
 </select>
-<a href='?'>Reset</a>
+<input type="button" value="Reset" onclick="return clearForm(this.form);">
 </form>
 <div>
 <hr />
