@@ -3,11 +3,12 @@
 #
 #  run:
 #  nohup bash loadavg.sh &
-
-DEST=data/loadavg
+DATA_PATH=./data
+DEST=avg
 SLEEP=5
 FLAG=loadavg.on
 
+[ "$DATA_PATH" ] || { echo "ERROR: 'DATA_PATH' value is missing"; exit; }
 [ "$DEST" ]      || { echo "ERROR: 'DEST' value is missing"; exit; }
 [ "$SLEEP" ]     || { echo "ERROR: 'SLEEP' value is missing"; exit; }
 [ "$FLAG" ]      || { echo "ERROR: 'FLAG' value is missing"; exit; }
@@ -41,7 +42,8 @@ mk_avg_bsd() {
 mk_avg_linux() {
   local src=$1
   local dst_prefix=$2
-  local d=$(date +"%F")
+  local d=$3
+  [[ "$d" ]] || d=$(date +"%F")
   local dst=${dst_prefix}.$d.log
   [ -f $dst ] || echo "Stamp,LoadAvg" > $dst
 
@@ -57,15 +59,16 @@ mk_avg_linux() {
 }
 
 touch $FLAG
-dest=$DEST
 
 while [ -f $FLAG ] ; do
-
+  d=$(date +"%F")
+  dest=$DATA_PATH/$d
+  [ -d $dest ] || mkdir -p $dest
   ts=$(date +"%F_%T")
-  ps $PS > $dest.$ts.ps.log
+  ps $PS > $dest/$DEST.$ts.ps.log
   top -b $TOP > $dest.tmp
-  cat $dest.tmp >> $dest.$ts.top.log
-  mk_avg_linux $dest.tmp $dest.swm
+  cat $dest.tmp >> $dest/$DEST.$ts.top.log
+  mk_avg_linux $dest.tmp $DATA_PATH/$DEST $d
   rm $dest.tmp
   sleep $SLEEP
 done
